@@ -1,6 +1,13 @@
 # PROJECT PIXEL WARS (little format)
 *Made by Jules DEBRECZENI in the **Python de la Fournaise** ([insta](https://www.instagram.com/pythondelafournaise/))association* 
 
+# Pixel War – Setup and Deployment
+
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/Djobanjo/FixPixelwar)
+![License](https://img.shields.io/github/license/USERNAME/REPO_NAME)
+![Firebase](https://img.shields.io/badge/Firebase-Connected-orange)
+
 ### Precondition
 
 Before starting, make sure you have installed:
