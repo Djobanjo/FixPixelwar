@@ -1,0 +1,15 @@
+# render.yaml
+services:
+  - type: web
+    name: pixelwar-backend
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      # SECRET contenant le JSON complet de Firebase Admin SDK
+      - key: FIREBASE_ADMIN_SDK
+        sync: false
+        fromSecret: FIREBASE_ADMIN_SDK
+    autoDeploy: true
