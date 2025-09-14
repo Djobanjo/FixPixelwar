@@ -34,7 +34,6 @@
     let cooldownInterval = null;
     let cooldownRemaining = 0;
 
-    // ✅ Message au démarrage
     if (cooldownDisplay) cooldownDisplay.textContent = "⏳Chargement de la map⏳";
 
     // ===============================
@@ -78,25 +77,25 @@
       };
     }
 
-    // convertit une couleur CSS (rgb(), rgba(), #fff, #ffffff) en #rrggbb
+    
     function cssColorToHex(color) {
       if (!color) return "#000000";
       color = color.trim();
 
-      // si déjà hex
+    
       if (color[0] === "#") {
         if (color.length === 4) {
-          // #rgb -> #rrggbb
+          
           return "#" + color[1] + color[1] + color[2] + color[2] + color[3] + color[3];
         }
         return color.length === 7 ? color.toLowerCase() : ("#" + color.slice(1).padStart(6, "0")).toLowerCase();
       }
 
-      // si rgb(...) or rgba(...)
+      
       let m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
       if (m) return rgbToHex(m[1], m[2], m[3]).toLowerCase();
 
-      // dernier recours : laisser le navigateur interpréter (permet ex 'red')
+     
       const tmp = document.createElement("div");
       tmp.style.color = color;
       document.body.appendChild(tmp);
@@ -109,12 +108,12 @@
     }
 
     // ===============================
-    // 🔹 Afficher popup dynamique (modifié pour bien lire la couleur actuelle)
+    // 🔹 Afficher popup dynamique 
     // ===============================
     function showPopup(index, event) {
       if (isLoading) return;
 
-      // Fermer l'ancienne popup
+      
       if (activePopup) {
         activePopup.remove();
         document.querySelectorAll(".pixel.pending").forEach(p => p.classList.remove("pending"));
@@ -128,12 +127,12 @@
       document.body.appendChild(popup);
       activePopup = popup;
 
-      // Couleur actuelle du pixel (R,G,B)
-      const computed = getComputedStyle(pixel).backgroundColor; // "rgb(r, g, b)"
+      
+      const computed = getComputedStyle(pixel).backgroundColor; 
       const nums = (computed.match(/\d+/g) || []).map(Number);
       const r = nums[0] ?? 0, g = nums[1] ?? 0, b = nums[2] ?? 0;
 
-      // petit util pour fermer proprement + clean interval local
+      
       let popupWatcher = null;
       const cleanup = () => {
         pixel.classList.remove("pending");
@@ -142,7 +141,6 @@
         activePopup = null;
       };
 
-      // Rendu de la version "cooldown" (avec compteur live)
       const renderCooldown = () => {
         popup.innerHTML = `
           <span id="popupText" style="text-align:center;display:inline-block;">
@@ -156,13 +154,12 @@
           </span>
         `;
 
-        // Boutons (ré-attacher à chaque rendu)
         popup.querySelectorAll(".cancel").forEach(btn => btn.addEventListener("click", cleanup));
         const selectBtn = popup.querySelector(".select");
         if (selectBtn) {
           selectBtn.addEventListener("click", () => {
             colorPicker.value = rgbToHex(r, g, b);
-            // Si tu as des inputs R/G/B, on les sync
+           
             const rIn = document.getElementById("rValue");
             const gIn = document.getElementById("gValue");
             const bIn = document.getElementById("bValue");
@@ -173,7 +170,6 @@
         }
       };
 
-      // Rendu de la version "valider ?"
       const renderValidate = () => {
         popup.innerHTML = `
           <span id="popupText" style="text-align:center;display:inline-block;">
@@ -209,23 +205,22 @@
         }
       };
 
-      // Choisir la vue initiale
+      
       if (!canDraw) renderCooldown(); else renderValidate();
 
-      // Positionner la popup
+      
       const rect = pixel.getBoundingClientRect();
       popup.style.left = `${rect.left + window.scrollX + 20}px`;
       popup.style.top = `${rect.top + window.scrollY - 75}px`;
 
-      // 👀 Petit watcher local : dès que canDraw repasse à true, on bascule vers "Valider ?"
-      // (on ne touche PAS au compteur ici ; il est mis à jour par startCooldown())
+      
       popupWatcher = setInterval(() => {
         if (canDraw && activePopup === popup) {
           renderValidate();
           clearInterval(popupWatcher);
           popupWatcher = null;
         }
-        // si la popup a été fermée autrement
+        
         if (!document.body.contains(popup)) {
           clearInterval(popupWatcher);
           popupWatcher = null;
@@ -239,7 +234,7 @@
     // ===============================
     async function placePixel(index) {
       const color = colorPicker.value;
-      const userId = "USER123"; // peut être généré côté client
+      const userId = "USER123"; 
 
       try {
         const res = await fetch("https://fixpixelwar.onrender.com/pixel", {
@@ -252,7 +247,7 @@
         console.log(text);
 
         if (res.ok) startCooldown();
-        else alert(text); // affichage message si cooldown actif ou erreur
+        else alert(text); 
       } catch (err) {
         console.error(err);
       }
@@ -317,7 +312,7 @@
     });
 
     // ======================
-    // 🔹 Gestion du Mode RGB (toggle + validation + synchro)
+    // 🔹 Gestion du Mode RGB 
     // ======================
     // toggle button
     const toggleBtn = document.getElementById("toggleRgb");
@@ -329,7 +324,7 @@
       });
     }
 
-    // validate RGB button
+  
     const validateBtn = document.getElementById("validateRgb");
     if (validateBtn) {
       validateBtn.addEventListener("click", () => {
@@ -341,7 +336,7 @@
       });
     }
 
-    // synchro colorPicker -> rgb inputs
+  
     if (colorPicker) {
       colorPicker.addEventListener("input", () => {
         const hex = colorPicker.value;
@@ -358,7 +353,7 @@
     }
 
     // ======================
-    // 🔹 usePixelColor (sélectionner la couleur du pixel dans le picker)
+    // 🔹 usePixelColor 
     // ======================
     function usePixelColor(index) {
       const pixel = grid.children[index];
@@ -366,7 +361,6 @@
       const computed = getComputedStyle(pixel).backgroundColor;
       const hex = cssColorToHex(computed);
       colorPicker.value = hex;
-      // mettre à jour également les inputs R/G/B si présents
       const rgb = hexToRgb(hex);
       const rIn = document.getElementById("rValue");
       const gIn = document.getElementById("gValue");
@@ -377,8 +371,6 @@
         bIn.value = rgb.b;
       }
     }
-
-    // Expose usePixelColor si tu veux l'appeler depuis la popup HTML inline (optionnel)
     window.usePixelColor = usePixelColor;
 
   })();
