@@ -237,12 +237,28 @@
     // ===============================
     // 🔹 Placer un pixel
     // ===============================
-    function placePixel(index) {
+    async function placePixel(index) {
       const color = colorPicker.value;
-      grid.children[index].style.background = color;
-      db.ref("pixels/" + index).set(color);
-      startCooldown();
+      const userId = "USER123"; // peut être généré côté client
+
+      try {
+        const res = await fetch("https://pixelwar-backend.onrender.com/pixel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ index, color, userId })
+        });
+
+        const text = await res.text();
+        console.log(text);
+
+        if (res.ok) startCooldown();
+        else alert(text); // affichage message si cooldown actif ou erreur
+      } catch (err) {
+        console.error(err);
+      }
     }
+
+
 
     // ===============================
     // 🔹 Gestion du cooldown
