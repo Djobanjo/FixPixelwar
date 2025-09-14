@@ -2,7 +2,7 @@
 
 name_file = "setting.json"
 size = 70
-color = "#afafaf"
+color = "#fdf3d6"
 
 with open(name_file, "w", encoding="utf-8") as f:
     f.write("{\n")
@@ -16,3 +16,4 @@ with open(name_file, "w", encoding="utf-8") as f:
 
     f.write("  ]\n")
     f.write("}")
+
