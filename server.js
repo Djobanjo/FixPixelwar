@@ -6,12 +6,10 @@ const bodyParser = require("body-parser");
 // ⚠️ Récupérer le JSON depuis la variable d'environnement FIREBASE_ADMIN_SDK
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
 
-// Transformer les \\n en vrais sauts de ligne
-serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://pixelwar-947d9-default-rtdb.europe-west1.firebasedatabase.app"
+  databaseURL: "https://pixelwarfix-default-rtdb.europe-west1.firebasedatabase.app"
 });
 
 const db = admin.database();
