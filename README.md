@@ -5,7 +5,7 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/Djobanjo/FixPixelwar)
-![License](https://img.shields.io/github/license/USERNAME/REPO_NAME)
+![License](https://img.shields.io/github/license/Djobanjo/FixPixelwar)
 ![Firebase](https://img.shields.io/badge/Firebase-Connected-orange)
 
 ### Precondition
