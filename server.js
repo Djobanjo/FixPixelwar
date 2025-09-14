@@ -3,7 +3,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 
-// ⚠️ Récupérer le JSON depuis la variable d'environnement FIREBASE_ADMIN_SDK
+
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
 
 
@@ -16,7 +16,7 @@ const db = admin.database();
 const app = express();
 app.use(bodyParser.json());
 
-const COOLDOWN_MS = 5000; // 5 secondes
+const COOLDOWN_MS = 5000; 
 let lastPixelTime = {};
 
 const cors = require("cors");
@@ -35,11 +35,11 @@ app.post("/pixel", async (req, res) => {
     return res.status(429).send("Cooldown actif");
   }
 
-  // Validation du pixel
+
   if (index < 0 || index >= 70*70) return res.status(400).send("Index invalide");
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).send("Couleur invalide");
 
-  // Écriture dans Firebase
+ 
   await db.ref("pixels/" + index).set(color);
 
   lastPixelTime[userId] = now;
@@ -47,6 +47,6 @@ app.post("/pixel", async (req, res) => {
   res.send("Pixel placé ✅");
 });
 
-// Utiliser le port fourni par Render ou 3000 en local
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

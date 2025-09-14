@@ -1,4 +1,4 @@
-# render.yaml
+
 services:
   - type: web
     name: pixelwar-backend
