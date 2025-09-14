@@ -5,7 +5,7 @@ services:
     env: node
     plan: free
     branch: main
-    buildCommand: npm install
+    buildCommand: npm install 
     startCommand: node server.js
     envVars:
       # SECRET contenant le JSON complet de Firebase Admin SDK

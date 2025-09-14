@@ -18,6 +18,12 @@ app.use(bodyParser.json());
 const COOLDOWN_MS = 5000; // 5 secondes
 let lastPixelTime = {};
 
+const cors = require("cors");
+app.use(cors({
+  origin: "https://djobanjo.github.io"
+}));
+
+
 app.post("/pixel", async (req, res) => {
   const { index, color, userId } = req.body;
 
