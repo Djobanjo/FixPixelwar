@@ -3,8 +3,8 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 
-// ⚠️ Nécessite ton fichier Firebase Admin SDK JSON
-const serviceAccount = require("./serviceAccountKey.json");
+// ⚠️ Récupérer le JSON depuis la variable d'environnement FIREBASE_ADMIN_SDK
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
