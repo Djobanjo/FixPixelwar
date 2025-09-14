@@ -242,7 +242,7 @@
       const userId = "USER123"; // peut être généré côté client
 
       try {
-        const res = await fetch("https://fixpixelwar.onrender.com", {
+        const res = await fetch("https://fixpixelwar.onrender.com/pixel", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ index, color, userId })
