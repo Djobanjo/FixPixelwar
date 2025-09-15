@@ -42,7 +42,9 @@ npm install
 - Create an account on [Render.com](https://render.com) or another Node.js hosting service
 - Link your GitHub account to Render
 - Deploy your GitHub repository as a **Web Service**
+- use the link in your script.js
 - Set environment variables for Firebase (`API_KEY`, `AUTH_DOMAIN`, etc.)
+
 
 ---
 
@@ -55,3 +57,7 @@ npm run dev
 Open your browser at `http://localhost:3000` to see the app in action.
 
 ---
+
+# Info
+
+Cooldown for the web server : after 15 min of inactivty   
