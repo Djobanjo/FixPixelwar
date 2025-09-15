@@ -4,8 +4,8 @@ const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+// Firebase Admin SDK
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://pixelwarfix-default-rtdb.europe-west1.firebasedatabase.app"
@@ -15,6 +15,7 @@ const db = admin.database();
 const app = express();
 app.use(bodyParser.json());
 
+// 🔹 CORS : autorise uniquement ton GitHub Pages
 app.use(cors({
   origin: "https://djobanjo.github.io"
 }));
@@ -113,7 +114,6 @@ app.post("/pixel", async (req, res) => {
     return res.status(401).send("Token invalide ou expiré");
   }
 });
-
 
 // ===============================
 // 🔹 Lancer le serveur

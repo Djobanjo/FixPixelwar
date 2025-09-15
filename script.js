@@ -18,9 +18,15 @@
   // ===============================
   // 🔹 Auth anonyme
   // ===============================
-  firebase.auth().signInAnonymously()
-    .then(() => console.log("✅ Connecté en anonyme"))
-    .catch(err => console.error("❌ Erreur Auth anonyme:", err));
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      firebase.auth().signInAnonymously()
+        .then(u => console.log("✅ Anonyme connecté", u.user.uid))
+        .catch(err => console.error("❌ Erreur auth anonyme:", err));
+    } else {
+      console.log("✅ Utilisateur déjà connecté", user.uid);
+    }
+  });
 
   // ===============================
   // 🔹 Variables principales
@@ -71,30 +77,7 @@
     hex = hex.replace(/^#/, "");
     if (hex.length === 3) hex = hex.split("").map(c => c+c).join("");
     const bigint = parseInt(hex, 16);
-    return {
-      r: (bigint >> 16) & 255,
-      g: (bigint >> 8) & 255,
-      b: bigint & 255
-    };
-  }
-
-  function cssColorToHex(color) {
-    if (!color) return "#000000";
-    color = color.trim();
-    if (color[0] === "#") {
-      if (color.length === 4) return "#" + color[1]+color[1]+color[2]+color[2]+color[3]+color[3];
-      return color.length === 7 ? color.toLowerCase() : ("#" + color.slice(1).padStart(6,"0")).toLowerCase();
-    }
-    let m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-    if (m) return rgbToHex(m[1], m[2], m[3]).toLowerCase();
-    const tmp = document.createElement("div");
-    tmp.style.color = color;
-    document.body.appendChild(tmp);
-    const computed = getComputedStyle(tmp).color;
-    document.body.removeChild(tmp);
-    m = computed.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-    if (m) return rgbToHex(m[1], m[2], m[3]).toLowerCase();
-    return "#000000";
+    return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
   }
 
   // ===============================
@@ -139,7 +122,6 @@
           </div>
         </span>
       `;
-
       popup.querySelector(".cancel")?.addEventListener("click", cleanup);
       popup.querySelector(".confirm")?.addEventListener("click", () => { placePixel(index); cleanup(); });
       popup.querySelector(".select")?.addEventListener("click", () => {
@@ -166,14 +148,8 @@
       popup.querySelector(".cancel")?.addEventListener("click", cleanup);
       popup.querySelector(".select")?.addEventListener("click", () => {
         colorPicker.value = rgbToHex(r, g, b);
-        const rIn = document.getElementById("rValue");
-        const gIn = document.getElementById("gValue");
-        const bIn = document.getElementById("bValue");
-        if (rIn && gIn && bIn) { rIn.value = r; gIn.value = g; bIn.value = b; }
       });
-    } else {
-      renderValidate();
-    }
+    } else renderValidate();
 
     const rect = pixel.getBoundingClientRect();
     popup.style.left = `${rect.left + window.scrollX + 20}px`;
@@ -184,11 +160,10 @@
   // 🔹 Placer un pixel via backend sécurisé
   // ===============================
   async function placePixel(index) {
-    const color = colorPicker.value;
     const user = firebase.auth().currentUser;
-
     if (!user) { alert("⚠️ Pas connecté à Firebase"); return; }
 
+    const color = colorPicker.value;
     try {
       const token = await user.getIdToken();
       const res = await fetch("https://fixpixelwar.onrender.com/pixel", {
@@ -211,7 +186,10 @@
   function startCooldown() {
     canDraw = false;
     cooldownRemaining = cooldownTime / 1000;
-    if (cooldownDisplay) { cooldownDisplay.style.color="#b61a16"; cooldownDisplay.textContent=`⏳Cooldown : ${cooldownRemaining}s⏳`; }
+    if (cooldownDisplay) {
+      cooldownDisplay.style.color = "#b61a16";
+      cooldownDisplay.textContent = `⏳Cooldown : ${cooldownRemaining}s⏳`;
+    }
 
     if (cooldownInterval) clearInterval(cooldownInterval);
 
@@ -224,8 +202,6 @@
             : `✅Prêt à dessiner✅`;
         if (cooldownRemaining <= 0) cooldownDisplay.style.color = "#457028";
       }
-      const popupCounter = document.getElementById("popupCooldown");
-      if (popupCounter) popupCounter.textContent = Math.max(0, cooldownRemaining);
       if (cooldownRemaining <= 0) {
         clearInterval(cooldownInterval);
         canDraw = true;
@@ -243,7 +219,10 @@
       grid.children[i].style.background = data[i];
     });
     isLoading = false;
-    if (canDraw && cooldownDisplay) { cooldownDisplay.style.color = "#457028"; cooldownDisplay.textContent="✅Prêt à dessiner✅"; }
+    if (canDraw && cooldownDisplay) {
+      cooldownDisplay.style.color = "#457028";
+      cooldownDisplay.textContent = "✅Prêt à dessiner✅";
+    }
   });
 
   // ===============================
@@ -269,7 +248,6 @@
     const rIn = document.getElementById("rValue");
     const gIn = document.getElementById("gValue");
     const bIn = document.getElementById("bValue");
-    if (rIn && gIn && bIn) { rIn.value=rgb.r; gIn.value=rgb.g; bIn.value=rgb.b; }
+    if (rIn && gIn && bIn) { rIn.value=rgb.r; gIn.value=rgb.g; bIn.value=b.rgb; }
   });
-
 })();
