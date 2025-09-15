@@ -28,24 +28,25 @@ app.use(cors({
 app.post("/pixel", async (req, res) => {
   const { index, color, userId } = req.body;
 
-  if (!index || !color || !userId) return res.status(400).send("Paramètres manquants");
+  if (index === undefined || index === null || !color || !userId) {
+    return res.status(400).send("Paramètres manquants");
+  }
 
   const now = Date.now();
   if (lastPixelTime[userId] && now - lastPixelTime[userId] < COOLDOWN_MS) {
     return res.status(429).send("Cooldown actif");
   }
 
-
   if (index < 0 || index >= 70*70) return res.status(400).send("Index invalide");
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).send("Couleur invalide");
 
- 
   await db.ref("pixels/" + index).set(color);
 
   lastPixelTime[userId] = now;
 
   res.send("Pixel placé ✅");
 });
+
 
 
 const PORT = process.env.PORT || 3000;

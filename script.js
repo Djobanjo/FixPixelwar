@@ -2,6 +2,7 @@
     // ===============================
     // 🔹 Configuration Firebase (inchangée)
     // ===============================
+    //##########################A changer################################
     const firebaseConfig = {
       apiKey: "AIzaSyCK_lMv34wFWLI8tH52_7mHYOOoh03_u_0",
       authDomain: "pixelwar-947d9.firebaseapp.com",
@@ -12,7 +13,7 @@
       databaseURL: "https://pixelwarfix-default-rtdb.europe-west1.firebasedatabase.app/"
     };
 
-    
+    //##########################A changer################################
 
     
     firebase.initializeApp(firebaseConfig);
