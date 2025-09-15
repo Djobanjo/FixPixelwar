@@ -37,13 +37,13 @@ const MAX_PIXEL_DISTANCE = 15;
 // 🔹 Endpoint : placer un pixel
 // ===============================
 app.post("/pixel", async (req, res) => {
-  const { index, color, userId, token } = req.body;
-  if (!userId || index === undefined || !color || !token) {
+  const { index, color, token } = req.body;
+  if (!token || index === undefined || !color) {
     return res.status(400).send("Paramètres manquants");
   }
 
   try {
-    // Vérifie le token Firebase
+    // 🔹 Vérifie le token Firebase
     const decoded = await admin.auth().verifyIdToken(token);
     const uid = decoded.uid;
     const isAnonymous = decoded.firebase.sign_in_provider === "anonymous";
@@ -113,6 +113,7 @@ app.post("/pixel", async (req, res) => {
     return res.status(401).send("Token invalide ou expiré");
   }
 });
+
 
 // ===============================
 // 🔹 Lancer le serveur
