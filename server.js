@@ -32,7 +32,7 @@ const bannedIps = {};
 const pixelHistoryByUid = {};
 
 const COOLDOWN_MS_REAL = 5000;   // 5s comptes réels
-const COOLDOWN_MS_ANON = 20000;  // 20s comptes anonymes
+const COOLDOWN_MS_ANON = 5000;  // 20s comptes anonymes
 const MAX_ANON_PER_IP = 5;
 const MAX_PIXEL_DISTANCE = 15;
 
