@@ -4,8 +4,8 @@ const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-// Firebase Admin SDK
 const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_SDK);
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://pixelwarfix-default-rtdb.europe-west1.firebasedatabase.app"
@@ -13,15 +13,16 @@ admin.initializeApp({
 
 const db = admin.database();
 const app = express();
+
 app.use(bodyParser.json());
 
-// 🔹 CORS : autorise uniquement ton GitHub Pages
+// 🔹 Autoriser uniquement ton frontend
 app.use(cors({
   origin: "https://djobanjo.github.io"
 }));
 
 // ===============================
-// 🔹 Config sécurité
+// 🔹 Configuration sécurité
 // ===============================
 const cooldownsByUid = {};
 const cooldownsByIp = {};
@@ -29,8 +30,8 @@ const anonymousAccountsByIp = {};
 const bannedIps = {};
 const pixelHistoryByUid = {};
 
-const COOLDOWN_MS_REAL = 5000; // 5s comptes réels
-const COOLDOWN_MS_ANON = 20000; // 20s comptes anonymes
+const COOLDOWN_MS_REAL = 5000;   // 5s comptes réels
+const COOLDOWN_MS_ANON = 20000;  // 20s comptes anonymes
 const MAX_ANON_PER_IP = 5;
 const MAX_PIXEL_DISTANCE = 15;
 
@@ -39,12 +40,12 @@ const MAX_PIXEL_DISTANCE = 15;
 // ===============================
 app.post("/pixel", async (req, res) => {
   const { index, color, token } = req.body;
+
   if (!token || index === undefined || !color) {
-    return res.status(400).send("Paramètres manquants");
+    return res.status(400).json({ message: "Paramètres manquants" });
   }
 
   try {
-    // 🔹 Vérifie le token Firebase
     const decoded = await admin.auth().verifyIdToken(token);
     const uid = decoded.uid;
     const isAnonymous = decoded.firebase.sign_in_provider === "anonymous";
@@ -54,7 +55,7 @@ app.post("/pixel", async (req, res) => {
 
     // 🔹 Vérif IP bannie
     if (bannedIps[ip] && now < bannedIps[ip]) {
-      return res.status(403).send("IP temporairement bannie");
+      return res.status(403).json({ message: "IP temporairement bannie" });
     }
 
     // 🔹 Comptes anonymes trop nombreux
@@ -65,22 +66,24 @@ app.post("/pixel", async (req, res) => {
 
       if (anonymousAccountsByIp[ip].length > MAX_ANON_PER_IP) {
         bannedIps[ip] = now + 60*60*1000; // ban 1h
-        return res.status(429).send("Trop de comptes anonymes, IP bannie 1h");
+        return res.status(429).json({ message: "Trop de comptes anonymes, IP bannie 1h" });
       }
     }
 
     // 🔹 Cooldown UID
     const cooldown = isAnonymous ? COOLDOWN_MS_ANON : COOLDOWN_MS_REAL;
-    if (cooldownsByUid[uid] && now - cooldownsByUid[uid] < cooldown) {
-      const wait = Math.ceil((cooldown - (now - cooldownsByUid[uid])) / 1000);
-      return res.status(429).send(`Cooldown UID : ${wait}s`);
+    const last = cooldownsByUid[uid] || 0;
+    if (now - last < cooldown) {
+      const wait = cooldown - (now - last);
+      return res.status(429).json({ message: `Cooldown UID`, cooldownMs: wait });
     }
     cooldownsByUid[uid] = now;
 
     // 🔹 Cooldown IP
-    if (cooldownsByIp[ip] && now - cooldownsByIp[ip] < COOLDOWN_MS_REAL) {
-      const wait = Math.ceil((COOLDOWN_MS_REAL - (now - cooldownsByIp[ip])) / 1000);
-      return res.status(429).send(`Cooldown IP : ${wait}s`);
+    const lastIp = cooldownsByIp[ip] || 0;
+    if (now - lastIp < COOLDOWN_MS_REAL) {
+      const wait = COOLDOWN_MS_REAL - (now - lastIp);
+      return res.status(429).json({ message: `Cooldown IP`, cooldownMs: wait });
     }
     cooldownsByIp[ip] = now;
 
@@ -98,20 +101,22 @@ app.post("/pixel", async (req, res) => {
         console.warn(`⚠️ Flag UID ${uid} pour pixels dispersés`);
       }
     }
-    recent.push({index, timestamp: now});
+    recent.push({ index, timestamp: now });
     pixelHistoryByUid[uid] = recent;
 
     // 🔹 Vérifications données
-    if (index < 0 || index >= 70*70) return res.status(400).send("Index invalide");
-    if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).send("Couleur invalide");
+    if (index < 0 || index >= 70*70) return res.status(400).json({ message: "Index invalide" });
+    if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).json({ message: "Couleur invalide" });
 
     // 🔹 Met à jour la DB
     await db.ref("pixels/" + index).set(color);
 
-    res.send("Pixel placé ✅");
+    // 🔹 Retour JSON avec cooldown exact
+    res.json({ message: "Pixel placé ✅", cooldownMs: cooldown });
+
   } catch (err) {
     console.error(err);
-    return res.status(401).send("Token invalide ou expiré");
+    return res.status(401).json({ message: "Token invalide ou expiré" });
   }
 });
 
