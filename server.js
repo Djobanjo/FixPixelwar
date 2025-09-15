@@ -18,7 +18,8 @@ app.use(bodyParser.json());
 
 // 🔹 Autoriser uniquement ton frontend
 app.use(cors({
-  origin: "https://djobanjo.github.io"
+  origin: "https://djobanjo.github.io",
+  credentials: true,
 }));
 
 // ===============================

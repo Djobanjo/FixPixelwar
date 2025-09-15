@@ -63,7 +63,11 @@
   // 🔹 Popup de confirmation
   // ===============================
   function showPopup(index) {
-    if (activePopup) { activePopup.remove(); document.querySelectorAll(".pixel.pending").forEach(p=>p.classList.remove("pending")); }
+    if (activePopup) {
+      activePopup.remove();
+      document.querySelectorAll(".pixel.pending").forEach(p=>p.classList.remove("pending"));
+    }
+
     const pixel = grid.children[index];
     pixel.classList.add("pending");
 
@@ -108,9 +112,9 @@
         body: JSON.stringify({ index, color, token })
       });
 
-      const data = await res.json().catch(() => null); // serveur peut renvoyer texte ou JSON
+      const data = await res.json().catch(() => null);
       if (res.ok) {
-        const cooldown = data?.cooldownMs || 5000; // récupérer cooldown exact du serveur
+        const cooldown = data?.cooldownMs || 5000;
         startCooldown(cooldown);
       } else {
         alert(data?.message || "Erreur serveur");
