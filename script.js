@@ -28,7 +28,7 @@
   const grid = document.getElementById("grid");
   const colorPicker = document.getElementById("colorPicker");
   const cooldownDisplay = document.getElementById("cooldown");
-  const size = 70;
+  const size = 100;
 
   let canDraw = true;
   let cooldownInterval = null;
@@ -59,9 +59,7 @@
     return { r:(bigint>>16)&255, g:(bigint>>8)&255, b:bigint&255 };
   }
 
-  // ===============================
-  // 🔹 Popup de confirmation
-  // ===============================
+
 function showPopup(index) {
   if (activePopup) {
     activePopup.remove();
@@ -116,9 +114,6 @@ function showPopup(index) {
 }
 
 
-  // ===============================
-  // 🔹 Placer un pixel via backend sécurisé
-  // ===============================
   async function placePixel(index) {
     if (!canDraw) return;
     const color = colorPicker.value;

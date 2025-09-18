@@ -54,12 +54,12 @@ app.post("/pixel", async (req, res) => {
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     const now = Date.now();
 
-    // 🔹 Vérif IP bannie
+
     if (bannedIps[ip] && now < bannedIps[ip]) {
       return res.status(403).json({ message: "IP temporairement bannie" });
     }
 
-    // 🔹 Comptes anonymes trop nombreux
+
     if (isAnonymous) {
       if (!anonymousAccountsByIp[ip]) anonymousAccountsByIp[ip] = [];
       anonymousAccountsByIp[ip] = anonymousAccountsByIp[ip].filter(ts => now - ts < 24*60*60*1000);
@@ -71,7 +71,7 @@ app.post("/pixel", async (req, res) => {
       }
     }
 
-    // 🔹 Cooldown UID
+
     const cooldown = isAnonymous ? COOLDOWN_MS_ANON : COOLDOWN_MS_REAL;
     const last = cooldownsByUid[uid] || 0;
     if (now - last < cooldown) {
@@ -80,7 +80,7 @@ app.post("/pixel", async (req, res) => {
     }
     cooldownsByUid[uid] = now;
 
-    // 🔹 Cooldown IP
+
     const lastIp = cooldownsByIp[ip] || 0;
     if (now - lastIp < COOLDOWN_MS_REAL) {
       const wait = COOLDOWN_MS_REAL - (now - lastIp);
@@ -88,7 +88,7 @@ app.post("/pixel", async (req, res) => {
     }
     cooldownsByIp[ip] = now;
 
-    // 🔹 Flag pixels dispersés
+
     if (!pixelHistoryByUid[uid]) pixelHistoryByUid[uid] = [];
     const history = pixelHistoryByUid[uid];
     const recent = history.filter(p => now - p.timestamp < 5000);
@@ -105,14 +105,14 @@ app.post("/pixel", async (req, res) => {
     recent.push({ index, timestamp: now });
     pixelHistoryByUid[uid] = recent;
 
-    // 🔹 Vérifications données
+
     if (index < 0 || index >= 70*70) return res.status(400).json({ message: "Index invalide" });
     if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).json({ message: "Couleur invalide" });
 
-    // 🔹 Met à jour la DB
+
     await db.ref("pixels/" + index).set(color);
 
-    // 🔹 Retour JSON avec cooldown exact
+  
     res.json({ message: "Pixel placé ✅", cooldownMs: cooldown });
 
   } catch (err) {
@@ -121,8 +121,6 @@ app.post("/pixel", async (req, res) => {
   }
 });
 
-// ===============================
-// 🔹 Lancer le serveur
-// ===============================
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
