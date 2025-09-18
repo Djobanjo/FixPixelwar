@@ -62,55 +62,59 @@
   // ===============================
   // 🔹 Popup de confirmation
   // ===============================
-  function showPopup(index) {
-    if (activePopup) {
-      activePopup.remove();
-      document.querySelectorAll(".pixel.pending").forEach(p=>p.classList.remove("pending"));
-    }
+function showPopup(index) {
+  if (activePopup) {
+    activePopup.remove();
+    document.querySelectorAll(".pixel.pending").forEach(p=>p.classList.remove("pending"));
+  }
 
-    const pixel = grid.children[index];
-    pixel.classList.add("pending");
+  const pixel = grid.children[index];
+  pixel.classList.add("pending");
 
-    const popup = document.createElement("div");
-    popup.classList.add("popup");
-    document.body.appendChild(popup);
-    activePopup = popup;
+  const popup = document.createElement("div");
+  popup.classList.add("popup");
+  document.body.appendChild(popup);
+  activePopup = popup;
 
-    const {r,g,b} = hexToRgb(window.getComputedStyle(pixel).backgroundColor);
-    const cleanup = () => { pixel.classList.remove("pending"); popup.remove(); activePopup=null; };
+  const {r,g,b} = hexToRgb(window.getComputedStyle(pixel).backgroundColor);
 
-    popup.innerHTML = canDraw ? `
-      <span id="popupText" style="text-align:center;display:inline-block;">
-        Valider ?
-        <div style="margin-bottom:3px; margin-top:3px;">
-          <button class="confirm" style="width:52px">Oui</button>
-          <button class="cancel" style="width:52px">Non</button>
-        </div>
-        <div>
-          <button class="select">Sélectionner🎨</button>
-        </div>
-      </span>
-    ` : `
-      <span id="popupText" style="text-align:center;display:inline-block;">
-        ⏳ Cooldown actif <br>
-        <div style="margin-bottom:3px; margin-top:3px;">
-          <button class="cancel" style="width:107px">Annuler</button>
-        </div>
-        <div>
-          <button class="select">Sélectionner🎨</button>
-        </div>
-      </span>
+  const cleanup = () => { 
+    pixel.classList.remove("pending"); 
+    popup.remove(); 
+    activePopup=null; 
+  };
+
+  if (canDraw) {
+    popup.innerHTML = `
+      <div>Valider ?</div>
+      <div class="buttons">
+        <button class="confirm">Oui</button>
+        <button class="cancel">Non</button>
+      </div>
+      <button class="select">Sélectionner🎨</button>
     `;
 
+    popup.querySelector(".confirm").addEventListener("click", () => { placePixel(index); cleanup(); });
+    popup.querySelector(".cancel").addEventListener("click", cleanup);
+    popup.querySelector(".select").addEventListener("click", () => { colorPicker.value = rgbToHex(r,g,b); });
+  } else {
+    popup.innerHTML = `
+      <div>⏳ Cooldown actif</div>
+      <div class="buttons">
+        <button class="cancel">Annuler</button>
+      </div>
+      <button class="select">Sélectionner🎨</button>
+    `;
 
-    popup.querySelector(".cancel")?.addEventListener("click", cleanup);
-    popup.querySelector(".confirm")?.addEventListener("click", () => { placePixel(index); cleanup(); });
-    popup.querySelector(".select")?.addEventListener("click", () => { colorPicker.value = rgbToHex(r,g,b); });
-
-    const rect = pixel.getBoundingClientRect();
-    popup.style.left = `${rect.left + window.scrollX}px`;
-    popup.style.top = `${rect.top + window.scrollY - 50}px`;
+    popup.querySelector(".cancel").addEventListener("click", cleanup);
+    popup.querySelector(".select").addEventListener("click", () => { colorPicker.value = rgbToHex(r,g,b); });
   }
+
+  const rect = pixel.getBoundingClientRect();
+  popup.style.left = `${rect.left + window.scrollX}px`;
+  popup.style.top = `${rect.top + window.scrollY - 70}px`;
+}
+
 
   // ===============================
   // 🔹 Placer un pixel via backend sécurisé
