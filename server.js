@@ -16,7 +16,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// 🔹 Autoriser uniquement ton frontend
+
 app.use(cors({
   origin: "https://djobanjo.github.io",
   credentials: true,
@@ -31,8 +31,8 @@ const anonymousAccountsByIp = {};
 const bannedIps = {};
 const pixelHistoryByUid = {};
 
-const COOLDOWN_MS_REAL = 5000;   // 5s comptes réels
-const COOLDOWN_MS_ANON = 5000;  // 20s comptes anonymes
+const COOLDOWN_MS_REAL = 5000;   
+const COOLDOWN_MS_ANON = 5000;  
 const MAX_ANON_PER_IP = 5;
 const MAX_PIXEL_DISTANCE = 15;
 
@@ -56,7 +56,7 @@ setInterval(() => {
   for (let ip in bannedIps) {
     if (now > bannedIps[ip]) delete bannedIps[ip];
   }
-}, 60 * 1000); // toutes les 60s
+}, 60 * 1000); 
 
 // ===============================
 // 🔹 Endpoint : placer un pixel
@@ -88,7 +88,7 @@ app.post("/pixel", async (req, res) => {
       anonymousAccountsByIp[ip].push(now);
 
       if (anonymousAccountsByIp[ip].length > MAX_ANON_PER_IP) {
-        bannedIps[ip] = now + 60*60*1000; // ban 1h
+        bannedIps[ip] = now + 60*60*1000; 
         return res.status(429).json({ message: "Trop de comptes anonymes, IP bannie 1h" });
       }
     }
