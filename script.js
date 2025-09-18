@@ -80,11 +80,28 @@
     const cleanup = () => { pixel.classList.remove("pending"); popup.remove(); activePopup=null; };
 
     popup.innerHTML = canDraw ? `
-      Valider ?<br>
-      <button class="confirm">Oui</button>
-      <button class="cancel">Non</button>
-      <button class="select">Sélectionner</button>
-    ` : "⏳ Cooldown actif";
+      <span id="popupText" style="text-align:center;display:inline-block;">
+        Valider ?
+        <div style="margin-bottom:3px; margin-top:3px;">
+          <button class="confirm" style="width:52px">Oui</button>
+          <button class="cancel" style="width:52px">Non</button>
+        </div>
+        <div>
+          <button class="select">Sélectionner🎨</button>
+        </div>
+      </span>
+    ` : `
+      <span id="popupText" style="text-align:center;display:inline-block;">
+        ⏳ Cooldown actif <br>
+        <div style="margin-bottom:3px; margin-top:3px;">
+          <button class="cancel" style="width:107px">Annuler</button>
+        </div>
+        <div>
+          <button class="select">Sélectionner🎨</button>
+        </div>
+      </span>
+    `;
+
 
     popup.querySelector(".cancel")?.addEventListener("click", cleanup);
     popup.querySelector(".confirm")?.addEventListener("click", () => { placePixel(index); cleanup(); });
