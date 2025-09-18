@@ -36,6 +36,28 @@ const COOLDOWN_MS_ANON = 5000;  // 20s comptes anonymes
 const MAX_ANON_PER_IP = 5;
 const MAX_PIXEL_DISTANCE = 15;
 
+setInterval(() => {
+  const now = Date.now();
+
+  for (let uid in cooldownsByUid) {
+    if (now - cooldownsByUid[uid] > 60 * 1000) delete cooldownsByUid[uid];
+  }
+  for (let ip in cooldownsByIp) {
+    if (now - cooldownsByIp[ip] > 60 * 1000) delete cooldownsByIp[ip];
+  }
+  for (let uid in pixelHistoryByUid) {
+    pixelHistoryByUid[uid] = pixelHistoryByUid[uid].filter(p => now - p.timestamp < 60 * 1000);
+    if (pixelHistoryByUid[uid].length === 0) delete pixelHistoryByUid[uid];
+  }
+  for (let ip in anonymousAccountsByIp) {
+    anonymousAccountsByIp[ip] = anonymousAccountsByIp[ip].filter(ts => now - ts < 24 * 60 * 60 * 1000);
+    if (anonymousAccountsByIp[ip].length === 0) delete anonymousAccountsByIp[ip];
+  }
+  for (let ip in bannedIps) {
+    if (now > bannedIps[ip]) delete bannedIps[ip];
+  }
+}, 60 * 1000); // toutes les 60s
+
 // ===============================
 // 🔹 Endpoint : placer un pixel
 // ===============================
