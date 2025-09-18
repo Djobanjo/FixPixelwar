@@ -115,10 +115,10 @@ app.post("/pixel", async (req, res) => {
     const history = pixelHistoryByUid[uid];
     const recent = history.filter(p => now - p.timestamp < 5000);
     for (let p of recent) {
-      const prevX = p.index % 70;
-      const prevY = Math.floor(p.index / 70);
-      const currX = index % 70;
-      const currY = Math.floor(index / 70);
+      const prevX = p.index % 100;
+      const prevY = Math.floor(p.index / 100);
+      const currX = index % 100;
+      const currY = Math.floor(index / 100);
       const distance = Math.sqrt((currX-prevX)**2 + (currY-prevY)**2);
       if (distance > MAX_PIXEL_DISTANCE) {
         console.warn(`⚠️ Flag UID ${uid} pour pixels dispersés`);
@@ -128,7 +128,7 @@ app.post("/pixel", async (req, res) => {
     pixelHistoryByUid[uid] = recent;
 
 
-    if (index < 0 || index >= 70*70) return res.status(400).json({ message: "Index invalide" });
+    if (index < 0 || index >= 100*100) return res.status(400).json({ message: "Index invalide" });
     if (!/^#[0-9a-fA-F]{6}$/.test(color)) return res.status(400).json({ message: "Couleur invalide" });
 
 

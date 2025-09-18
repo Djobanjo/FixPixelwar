@@ -6,7 +6,7 @@
     apiKey: "AIzaSyCK_lMv34wFWLI8tH52_7mHYOOoh03_u_0",
     authDomain: "pixelwar-947d9.firebaseapp.com",
     projectId: "pixelwarfix",
-    storageBucket: "pixelwarfix.appspot.com", // ⚠️ corrigé
+    storageBucket: "pixelwarfix.appspot.com", 
     messagingSenderId: "870240954549",
     appId: "1:870240954549:web:e83aa53ef7f2b5271eb6fc",
     databaseURL: "https://pixelwarfix-default-rtdb.europe-west1.firebasedatabase.app/"
